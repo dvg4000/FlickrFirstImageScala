@@ -111,7 +111,7 @@ class FlickrClientTest {
 
     val source = for {
       list <- sizeList
-      medium = list.filter("Medium" == _.label) if !medium.isEmpty
+      medium = list.filter("Medium" == _.label) if medium.nonEmpty
     } yield medium.head.source
 
     assertTrue(source.isEmpty)

@@ -16,8 +16,8 @@
 #   public *;
 #}
 
--dontoptimize
--dontobfuscate
+#-dontoptimize
+#-dontobfuscate
 -dontpreverify
 -dontwarn scala.**
 -ignorewarnings
