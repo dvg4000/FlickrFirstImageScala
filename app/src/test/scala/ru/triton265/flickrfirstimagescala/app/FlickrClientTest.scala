@@ -123,4 +123,26 @@ class FlickrClientTest {
     val result = input.decodeOption[FlickrClient.GetSizesResult]
     assertTrue(result.isEmpty)
   }
+
+  @Test def testGetSizes() {
+    val result = FlickrClient.getSizes(Some("21127436650"))
+    assertFalse(result.isEmpty)
+  }
+
+  @Test def testGetSizes2() {
+    val result = FlickrClient.getSizes(None)
+    assertTrue(result.isEmpty)
+  }
+
+  @Test def testGetSizes3() {
+    val result = FlickrClient.getSizes(FlickrClient.searchFirst(Some("flower")))
+    assertFalse(result.isEmpty)
+  }
+
+  /*
+  @Test def testGetSizes4() {
+    val result = FlickrClient.getSizes(FlickrClient.searchFirst(None))
+    assertTrue(result.isEmpty)
+  }
+  */
 }

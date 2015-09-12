@@ -14,11 +14,12 @@ object FlickrClient {
     "nojsoncallback" -> "1")
 
   def searchFirst(searchText: Option[String]) : Option[String] = {
+    // TODO: make more functional way.
     val response: HttpResponse[String] = Http(FlickrClient.FLICKR_BASEURL)
       .params(FlickrClient.OPTIONS)
       .param("method", "flickr.photos.search")
       .param("per_page", "1")
-      .param("text", searchText.getOrElse(""))
+      .param("text", searchText.getOrElse("")) // TODO: do not search empty string.
       .asString
 
     if (response.isError) {
@@ -33,11 +34,26 @@ object FlickrClient {
   }
 
   def getSizes(id: Option[String]) : Option[List[Size]] = {
-    return None
+    // TODO: make more functional way.
+    val response: HttpResponse[String] = Http(FlickrClient.FLICKR_BASEURL)
+      .params(FlickrClient.OPTIONS)
+      .param("method", "flickr.photos.getSizes")
+      .param("photo_id", id.getOrElse("")) // TODO: do not search empty string.
+      .asString
+
+    if (response.isError) {
+      return None
+    }
+
+    val result = response.body.decodeOption[FlickrClient.GetSizesResult]
+    return result
+      .filter(p => "ok" == p.stat)
+      .map(p => p.sizes.size)
   }
 
   // For Argonaut.
   // Parse search result.
+  // TODO: make package private.
   case class Photo(id: String)
   case class Photos(total: Long, photo: List[Photo])
   case class SearchResult(stat: String, photos: Photos)
