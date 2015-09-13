@@ -13,6 +13,9 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.lang.scala.schedulers.IOScheduler
 import rx.lang.scala.{JavaConversions, Observable, Subscription}
 
+object MainFragment {
+  private val EXTRA_IMAGE_URL: String = "EXTRA_IMAGE_URL"
+}
 
 class MainFragment extends Fragment {
   private var _subscriptionOption: Option[Subscription] = None
@@ -28,18 +31,21 @@ class MainFragment extends Fragment {
     val rootView: View = inflater.inflate(R.layout.fragment_main, container, false)
 
     _imageViewOption = Some(rootView.findViewById(R.id.imageView).asInstanceOf[ImageView])
+    if (null != savedInstanceState) {
+      setImageUrl(Some(savedInstanceState.getString(MainFragment.EXTRA_IMAGE_URL)))
+    }
     updateImageView()
 
     val editText = rootView.findViewById(R.id.editText).asInstanceOf[EditText]
     editText.setOnKeyListener(new OnKeyListener {
       override def onKey(view: View, keyCode: Int, keyEvent: KeyEvent): Boolean = {
-        if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (KeyEvent.KEYCODE_ENTER == keyCode)) {
+        if ((keyEvent.getAction == KeyEvent.ACTION_DOWN) && (KeyEvent.KEYCODE_ENTER == keyCode)) {
           // Search for entered text.
           findImage(Some(view.asInstanceOf[EditText].getText.toString))
 
           // Hide soft keyboard.
-          val imm = getActivity().getSystemService(Context.INPUT_METHOD_SERVICE).asInstanceOf[InputMethodManager]
-          imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+          val imm = getActivity.getSystemService(Context.INPUT_METHOD_SERVICE).asInstanceOf[InputMethodManager]
+          imm.hideSoftInputFromWindow(view.getApplicationWindowToken, InputMethodManager.HIDE_NOT_ALWAYS)
 
           return true
         }
@@ -50,12 +56,10 @@ class MainFragment extends Fragment {
     rootView
   }
 
-  /*
   override def onSaveInstanceState(outState: Bundle): Unit = {
     super.onSaveInstanceState(outState)
     _imageUrlOption.foreach(outState.putString(MainFragment.EXTRA_IMAGE_URL, _))
   }
-  */
 
   override def onDestroy(): Unit = {
     super.onDestroy()
@@ -150,18 +154,5 @@ class MainFragment extends Fragment {
           .into(imageView)
     }
     res.getOrElse(Toast.makeText(getActivity, R.string.error_empty_image_url, Toast.LENGTH_SHORT).show())
-
-    /*
-    _imageUrlOption
-      .map(imageUrl => {
-        Glide
-          .`with`(this)
-          .load(imageUrl)
-          .centerCrop()
-          .placeholder(android.R.drawable.stat_sys_download)
-          .into(_imageViewOption.get)
-      })
-      .getOrElse(Toast.makeText(getActivity, R.string.error_empty_image_url, Toast.LENGTH_SHORT).show())
-      */
   }
 }

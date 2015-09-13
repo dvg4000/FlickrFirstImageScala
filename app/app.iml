@@ -109,8 +109,8 @@
     <orderEntry type="library" exported="" name="support-v4-23.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="mockito-core-1.9.5" level="project" />
     <orderEntry type="library" exported="" name="glide-3.6.1" level="project" />
-    <orderEntry type="library" exported="" name="scalaj-http_2.11-1.1.5" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.0.1" level="project" />
+    <orderEntry type="library" exported="" name="scalaj-http_2.11-1.1.5" level="project" />
     <orderEntry type="library" name="scala-sdk-2.11.7" level="application" />
   </component>
 </module>

@@ -13,8 +13,7 @@ object FlickrClient {
     "format" -> "json",
     "nojsoncallback" -> "1")
 
-  def searchFirst(searchText: Option[String]) : Option[String] = {
-    // TODO: make more functional way.
+  private [app] def searchFirst(searchText: Option[String]) : Option[String] = {
     val response: HttpResponse[String] = Http(FlickrClient.FLICKR_BASEURL)
       .params(FlickrClient.OPTIONS)
       .param("method", "flickr.photos.search")
@@ -33,8 +32,7 @@ object FlickrClient {
     } yield photos.photo.head.id
   }
 
-  def getSizes(id: Option[String]) : Option[List[Size]] = {
-    // TODO: make more functional way.
+  private [app] def getSizes(id: Option[String]) : Option[List[Size]] = {
     val response: HttpResponse[String] = Http(FlickrClient.FLICKR_BASEURL)
       .params(FlickrClient.OPTIONS)
       .param("method", "flickr.photos.getSizes")
@@ -46,7 +44,7 @@ object FlickrClient {
     }
 
     val result = response.body.decodeOption[FlickrClient.GetSizesResult]
-    return result
+    result
       .filter(p => "ok" == p.stat)
       .map(p => p.sizes.size)
   }
@@ -54,42 +52,41 @@ object FlickrClient {
 
   // For Argonaut.
   // Parse search result.
-  // TODO: make package private.
-  case class Photo(id: String)
-  case class Photos(total: Long, photo: List[Photo])
-  case class SearchResult(stat: String, photos: Photos)
+  private [app] case class Photo(id: String)
+  private [app] case class Photos(total: Long, photo: List[Photo])
+  private [app] case class SearchResult(stat: String, photos: Photos)
 
-  object Photo {
+  private [app] object Photo {
     implicit def PhotoCodecJson: CodecJson[Photo]
       = casecodec1(Photo.apply, Photo.unapply)("id")
   }
 
-  object Photos {
+  private [app] object Photos {
     implicit def PhotosCodecJson: CodecJson[Photos]
       = casecodec2(Photos.apply, Photos.unapply)("total", "photo")
   }
 
-  object SearchResult {
+  private [app] object SearchResult {
     implicit def SearchResultCodecJson: CodecJson[SearchResult]
       = casecodec2(SearchResult.apply, SearchResult.unapply)("stat", "photos")
   }
 
   // Parse get sizes reuslt.
-  case class Size(label: String, width: Long, height: Long, source: String)
-  case class Sizes(size: List[Size])
-  case class GetSizesResult(stat: String, sizes: Sizes)
+  private [app] case class Size(label: String, width: Long, height: Long, source: String)
+  private [app] case class Sizes(size: List[Size])
+  private [app] case class GetSizesResult(stat: String, sizes: Sizes)
 
-  object Size {
+  private [app] object Size {
     implicit def SizeCodecJson: CodecJson[Size]
       = casecodec4(Size.apply, Size.unapply)("label", "width", "height", "source")
   }
 
-  object Sizes {
+  private [app] object Sizes {
     implicit def SizesCodecJson: CodecJson[Sizes]
       = casecodec1(Sizes.apply, Sizes.unapply)("size")
   }
 
-  object GetSizesResult {
+  private [app] object GetSizesResult {
     implicit def GetSizesResultCodecJson: CodecJson[GetSizesResult]
       = casecodec2(GetSizesResult.apply, GetSizesResult.unapply)("stat", "sizes")
   }
