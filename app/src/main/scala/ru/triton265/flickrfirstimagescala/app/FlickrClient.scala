@@ -51,6 +51,7 @@ object FlickrClient {
       .map(p => p.sizes.size)
   }
 
+
   // For Argonaut.
   // Parse search result.
   // TODO: make package private.

@@ -7,21 +7,19 @@ import android.view.View.OnKeyListener
 import android.view.inputmethod.InputMethodManager
 import android.view.{KeyEvent, View, ViewGroup, LayoutInflater}
 import android.widget.{EditText, ImageView, Toast}
+import com.bumptech.glide.Glide
 import ru.triton265.flickrfirstimagescala.app.FlickrClient.Size
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.scala.schedulers.IOScheduler
 import rx.lang.scala.{JavaConversions, Observable, Subscription}
 
-object MainFragment {
-  private val EXTRA_IMAGE_URL: String = "EXTRA_IMAGE_URL"
-}
 
 class MainFragment extends Fragment {
-  private var _subscription: Option[Subscription] = None
-  private var _imageView: Option[ImageView] = None
-  private var _imageUrl: Option[String] = None
+  private var _subscriptionOption: Option[Subscription] = None
+  private var _imageViewOption: Option[ImageView] = None
+  private var _imageUrlOption: Option[String] = None
 
-  override def onCreate(savedInstanceState: Bundle) {
+  override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setRetainInstance(true)
   }
@@ -29,7 +27,8 @@ class MainFragment extends Fragment {
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
     val rootView: View = inflater.inflate(R.layout.fragment_main, container, false)
 
-    _imageView = Some(rootView.findViewById(R.id.imageView).asInstanceOf[ImageView])
+    _imageViewOption = Some(rootView.findViewById(R.id.imageView).asInstanceOf[ImageView])
+    updateImageView()
 
     val editText = rootView.findViewById(R.id.editText).asInstanceOf[EditText]
     editText.setOnKeyListener(new OnKeyListener {
@@ -51,9 +50,16 @@ class MainFragment extends Fragment {
     rootView
   }
 
-  override def onDestroy() {
+  /*
+  override def onSaveInstanceState(outState: Bundle): Unit = {
+    super.onSaveInstanceState(outState)
+    _imageUrlOption.foreach(outState.putString(MainFragment.EXTRA_IMAGE_URL, _))
+  }
+  */
+
+  override def onDestroy(): Unit = {
     super.onDestroy()
-    _subscription.foreach(_.unsubscribe())
+    _subscriptionOption.foreach(_.unsubscribe())
   }
 
   private def findImage(searchTextOption: Option[String]) {
@@ -96,7 +102,7 @@ class MainFragment extends Fragment {
         updateImageView()
       })
 
-    _subscription = Some(s)
+    _subscriptionOption = Some(s)
   }
 
   private def createSearchObservable(searchTextOption: Option[String]): Observable[Option[String]] = {
@@ -129,7 +135,33 @@ class MainFragment extends Fragment {
     })
   }
 
-  private def setImageUrl(urlOption: Option[String]) = _imageUrl = urlOption
+  private def setImageUrl(urlOption: Option[String]) = _imageUrlOption = urlOption
 
-  private def updateImageView() = ???
+  private def updateImageView() {
+    val res = for {
+      imageUrl <- _imageUrlOption
+      imageView <- _imageViewOption
+    } yield {
+        Glide
+          .`with`(this)
+          .load(imageUrl)
+          .centerCrop()
+          .placeholder(android.R.drawable.stat_sys_download)
+          .into(imageView)
+    }
+    res.getOrElse(Toast.makeText(getActivity, R.string.error_empty_image_url, Toast.LENGTH_SHORT).show())
+
+    /*
+    _imageUrlOption
+      .map(imageUrl => {
+        Glide
+          .`with`(this)
+          .load(imageUrl)
+          .centerCrop()
+          .placeholder(android.R.drawable.stat_sys_download)
+          .into(_imageViewOption.get)
+      })
+      .getOrElse(Toast.makeText(getActivity, R.string.error_empty_image_url, Toast.LENGTH_SHORT).show())
+      */
+  }
 }

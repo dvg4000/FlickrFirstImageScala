@@ -67,6 +67,8 @@ dependencies {
     compile 'io.argonaut:argonaut_2.11:6.1'
     compile 'io.reactivex:rxandroid:1.0.1'
     compile 'io.reactivex:rxscala_2.11:0.25.0'
+    compile 'com.github.bumptech.glide:glide:3.6.1'
+    compile 'com.android.support:support-v4:23.0.1'
 
     //androidTestCompile "com.android.support:multidex-instrumentation:1.0.1", { exclude module: "multidex" }
     testCompile 'junit:junit:4.12'
