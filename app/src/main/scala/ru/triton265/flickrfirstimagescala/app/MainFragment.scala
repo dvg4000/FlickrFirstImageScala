@@ -32,9 +32,9 @@ class MainFragment extends Fragment {
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
     val rootView: View = inflater.inflate(R.layout.fragment_main, container, false)
 
-    _imageViewOption = Some(rootView.findViewById(R.id.imageView).asInstanceOf[ImageView])
+    _imageViewOption = Option(rootView.findViewById(R.id.imageView).asInstanceOf[ImageView])
     if (null != savedInstanceState) {
-      setImageUrl(Some(savedInstanceState.getString(MainFragment.EXTRA_IMAGE_URL)))
+      setImageUrl(Option(savedInstanceState.getString(MainFragment.EXTRA_IMAGE_URL)))
     }
     updateImageView()
 
@@ -43,7 +43,7 @@ class MainFragment extends Fragment {
       override def onKey(view: View, keyCode: Int, keyEvent: KeyEvent): Boolean = {
         if ((keyEvent.getAction == KeyEvent.ACTION_DOWN) && (KeyEvent.KEYCODE_ENTER == keyCode)) {
           // Search for entered text.
-          findImage(Some(view.asInstanceOf[EditText].getText.toString))
+          findImage(Option(view.asInstanceOf[EditText].getText.toString))
 
           // Hide soft keyboard.
           val imm = getActivity.getSystemService(Context.INPUT_METHOD_SERVICE).asInstanceOf[InputMethodManager]
@@ -73,14 +73,14 @@ class MainFragment extends Fragment {
     searchTextOption.map( text => {
       Observable[Option[String]](subscriber => {
         if (!subscriber.isUnsubscribed) {
-          subscriber.onNext(FlickrClient.searchFirst(Some(text))) // Do flickr search request
+          subscriber.onNext(FlickrClient.searchFirst(Option(text))) // Do flickr search request
           subscriber.onCompleted()
         }
       }).map( searchResultOption => {
         searchResultOption.map( searchResult => {
           Observable[Option[List[Size]]] (subscriber => {
             if (!subscriber.isUnsubscribed) {
-              subscriber.onNext(FlickrClient.getSizes(Some(searchResult))) // Do flickr getsizes request
+              subscriber.onNext(FlickrClient.getSizes(Option(searchResult))) // Do flickr getsizes request
               subscriber.onCompleted()
             }
           })
@@ -113,7 +113,7 @@ class MainFragment extends Fragment {
         }
       )
 
-    _subscriptionOption = Some(s)
+    _subscriptionOption = Option(s)
   }
 
   private def createSearchObservable(searchTextOption: Option[String]): Observable[Option[String]] = {
@@ -121,7 +121,7 @@ class MainFragment extends Fragment {
       .map(searchText => {
         Observable[Option[String]](subscriber => {
           if (!subscriber.isUnsubscribed) {
-            subscriber.onNext(FlickrClient.searchFirst(Some(searchText))) // Do flickr search request
+            subscriber.onNext(FlickrClient.searchFirst(Option(searchText))) // Do flickr search request
             subscriber.onCompleted()
           }
         })
@@ -137,7 +137,7 @@ class MainFragment extends Fragment {
       .map(photoId => {
         Observable[Option[List[Size]]](subscriber => {
           if (!subscriber.isUnsubscribed) {
-            subscriber.onNext(FlickrClient.getSizes(Some(photoId))) // Do flickr getsizes request
+            subscriber.onNext(FlickrClient.getSizes(Option(photoId))) // Do flickr getsizes request
             subscriber.onCompleted()
           }
         })
@@ -166,7 +166,7 @@ class MainFragment extends Fragment {
   }
 
   private def runOnUiThread(task: () => Unit): Unit = {
-    Some(getActivity).foreach(
+    Option(getActivity).foreach(
       _.runOnUiThread(new Runnable { override def run(): Unit = { task() } })
     )
   }

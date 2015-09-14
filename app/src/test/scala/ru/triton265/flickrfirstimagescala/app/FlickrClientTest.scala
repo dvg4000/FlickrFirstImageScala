@@ -130,7 +130,7 @@ class FlickrClientTest {
   }
 
   @Test def testGetSizes() {
-    val result = FlickrClient.getSizes(Some("21127436650"))
+    val result = FlickrClient.getSizes(Option("21127436650"))
     assertFalse(result.isEmpty)
   }
 
@@ -140,7 +140,7 @@ class FlickrClientTest {
   }
 
   @Test def testGetSizes3() {
-    val result = FlickrClient.getSizes(FlickrClient.searchFirst(Some("flower")))
+    val result = FlickrClient.getSizes(FlickrClient.searchFirst(Option("flower")))
     assertFalse(result.isEmpty)
   }
 
@@ -150,12 +150,12 @@ class FlickrClientTest {
   }
 
   @Test def testGetSizes5() {
-    val result = FlickrClient.getSizes(FlickrClient.searchFirst(Some("")))
+    val result = FlickrClient.getSizes(FlickrClient.searchFirst(Option("")))
     assertTrue(result.isEmpty)
   }
 
   @Test def testGetSizes6() {
-    val result = FlickrClient.getSizes(FlickrClient.searchFirst(Some("dfjshfgsjkh324hjhdfjksdhfiojsoifwe")))
+    val result = FlickrClient.getSizes(FlickrClient.searchFirst(Option("dfjshfgsjkh324hjhdfjksdhfiojsoifwe")))
     assertTrue(result.isEmpty)
   }
 }
