@@ -95,16 +95,20 @@ class MainFragment extends Fragment {
       .flatMap(createGetSizesObservable)
       .subscribeOn(IOScheduler())
       .observeOn(JavaConversions.javaSchedulerToScalaScheduler(AndroidSchedulers.mainThread()))
-      .subscribe(sizes => {
-        // Get source of medium size.
-        val mediumSizeImageUrl = for {
-          list <- sizes
-          medium = list.filter("Medium" == _.label) if medium.nonEmpty
-        } yield medium.head.source
+      .subscribe(
+        sizes => {
+          // Get source of medium size.
+          val mediumSizeImageUrl = for {
+            list <- sizes
+            medium = list.filter("Medium" == _.label) if medium.nonEmpty
+          } yield medium.head.source
 
-        setImageUrl(mediumSizeImageUrl)
-        updateImageView()
-      })
+          setImageUrl(mediumSizeImageUrl)
+          updateImageView()},
+        e => {
+          Toast.makeText(getActivity, R.string.error_nothing_found, Toast.LENGTH_SHORT).show()
+        }
+      )
 
     _subscriptionOption = Some(s)
   }

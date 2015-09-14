@@ -47,8 +47,13 @@ class FlickrClientTest {
   }
 
   @Test def testSearch() {
-    val id = FlickrClient.searchFirst(Some("nice butt"))
+    val id = FlickrClient.searchFirst(Some("flowers"))
     assertFalse(id.isEmpty)
+  }
+
+  @Test def testSearch2() {
+    val id = FlickrClient.searchFirst(Some("12354685895656625dffgdfgr856sdfe96gfds"))
+    assertTrue(id.isEmpty)
   }
 
   @Test def testNormalGetSizesParse() {
