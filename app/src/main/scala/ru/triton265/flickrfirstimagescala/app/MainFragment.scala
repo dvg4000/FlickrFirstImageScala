@@ -3,6 +3,7 @@ package ru.triton265.flickrfirstimagescala.app
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View.OnKeyListener
 import android.view.inputmethod.InputMethodManager
 import android.view.{KeyEvent, View, ViewGroup, LayoutInflater}
@@ -14,6 +15,7 @@ import rx.lang.scala.schedulers.IOScheduler
 import rx.lang.scala.{JavaConversions, Observable, Subscription}
 
 object MainFragment {
+  private val TAG_DEBUG = MainFragment.getClass.getSimpleName
   private val EXTRA_IMAGE_URL: String = "EXTRA_IMAGE_URL"
 }
 
@@ -106,7 +108,8 @@ class MainFragment extends Fragment {
           setImageUrl(mediumSizeImageUrl)
           updateImageView()},
         e => {
-          Toast.makeText(getActivity, R.string.error_nothing_found, Toast.LENGTH_SHORT).show()
+          Toast.makeText(getActivity, R.string.error_unknown, Toast.LENGTH_SHORT).show()
+          Log.d(MainFragment.TAG_DEBUG, "onError: " + Log.getStackTraceString(e), e);
         }
       )
 
@@ -123,7 +126,8 @@ class MainFragment extends Fragment {
           }
         })
     }).getOrElse({
-      Toast.makeText(getActivity, R.string.error_empty_search_text, Toast.LENGTH_SHORT).show()
+      runOnUiThread( () => {
+        Toast.makeText(getActivity, R.string.error_empty_search_text, Toast.LENGTH_SHORT).show() })
       Observable.empty
     })
   }
@@ -138,7 +142,8 @@ class MainFragment extends Fragment {
           }
         })
     }).getOrElse({
-      Toast.makeText(getActivity, R.string.error_nothing_found, Toast.LENGTH_SHORT).show()
+      runOnUiThread( () => {
+        Toast.makeText(getActivity, R.string.error_nothing_found, Toast.LENGTH_SHORT).show() })
       Observable.empty
     })
   }
@@ -158,5 +163,11 @@ class MainFragment extends Fragment {
           .into(imageView)
     }
     res.getOrElse(Toast.makeText(getActivity, R.string.error_empty_image_url, Toast.LENGTH_SHORT).show())
+  }
+
+  private def runOnUiThread(task: () => Unit): Unit = {
+    Some(getActivity).foreach(
+      _.runOnUiThread(new Runnable { override def run(): Unit = { task() } })
+    )
   }
 }
